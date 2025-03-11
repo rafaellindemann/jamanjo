@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal.css">
+    <title>.::progHub::.</title>
+
+</head>
+<body>
+    <nav class="navbar">
+        <div onclick="carregarHome()" id="botaoHome">
+            <img src="img/logo_pH_header.png" alt="logo progHub" id="logoHeader">
+        </div>
+        <!-- <div id="headerDireita"> -->
+            <div id="divBtCategorias">
+                <button class="botao" onclick="tratarCliqueCategorias('Curso Youtube')" id="btCurso Youtube" aria-label="Filtrar: Curso Youtube">Cursos Youtube</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Canal Youtube')" id="btCanal Youtube" aria-label="Filtrar: Canal Youtube">Canais</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Curso')" id="btCurso" aria-label="Filtrar: Curso">Cursos</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Sites')" id="btSites" aria-label="Filtrar: Site">Sites</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Carreira')" id="btCarreira" aria-label="Filtrar: Carreira">Carreira</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Jogos')" id="btJogos" aria-label="Filtrar: Jogos">Jogos</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Repositórios')" id="btRepositórios"  aria-label="Filtrar: Repositórios">Repositórios</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Imagens')" id="btImagens"  aria-label="Filtrar: Imagens">Imagens</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Ferramentas')" id="btFerramentas"  aria-label="Filtrar: Ferramentas">Ferramentas</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Livros')" id="btLivros" aria-label="Filtrar: Livros">Livros</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Exercícios')" id="btExercícios" aria-label="Filtrar: Exercícios">Exercícios</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Fóruns')" id="btFóruns" aria-label="Filtrar: Fóruns">Fóruns</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Podcasts')" id="btPodcasts" aria-label="Filtrar: Podcasts">Podcasts</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Redes')" id="btRedes" aria-label="Filtrar: Redes Sociais">Redes</button>
+                <button class="botao" onclick="tratarCliqueCategorias('Balaio')" id="btBalaio" aria-label="Filtrar: Balaio, tudo que não tem categoria clara.">Balaio</button>
+            </div>
+            <div id="headerContribuicoes">
+                <div class="contribuicoesBotoes">
+                    <button class="botao" onclick="mostrarModal()" aria-label="Abrir modal de contribuição"><span class="material-icons" id="icone">add_circle_outline</span></button>
+                    <button class="botao" onclick="modSobre.showModal()" aria-label="Abrir modal fofo Sobre o Projeto"><span class="material-icons" id="icone">quiz</span></button>
+                </div>
+                <div id="divStats" aria-label="Número de registros mostrados / Número total de registros"></div>
+            </div>
+        <!-- </div> -->
+    </nav>
+    <main id="mainRegistros"></main>
+    <dialog id="modContribuicao">
+        <div id="divModContribuicao" class="modalContainer">
+            <button class="botao" onclick="fecharModal()" id="btFecharModal" aria-label="Fechar modal de contribuição"><span class="material-icons">highlight_off</span></button>
+            <h2>Gostaria de contribuir? Veja como fazer...</h2>
+            <ul>
+                <li>
+                    <h3>Com conteúdo</h3>
+                    <p>Se você conhece algum recurso legal para aprendizes ou desenvolvedores e gostaria de compartilhar, você pode abrir um pull request no repositório <a href="https://github.com/rafaellindemann/rafaellindemann.github.io" target="_blank" class="linkModal">aqui</a> com o nome do recurso, uma breve descrição e seu link.</p>
+                    <p>Se abrir um pull request ainda lhe parece coisa de maluco, você pode enviar sua contribuição pelo e-mail rafaelld@gmail.com</p>
+
+                </li>
+                <li>
+                    <h3>Participando do desenvolvimento</h3>
+                    <p>Além do propósito de divulgar coisas legais e ajudar a galera, este projeto também serve de laboratório. Se quiser contribuir implementando novas funcionalidades ou melhorando as gambiarras existentes, seja muito bem vindo com seu pull request!</p>
+                </li>
+                <li>
+                    <h3>Dando uma estrelinha no GitHub</h3>
+                    <p>Dev biscoitero adora estrelinha no GitHub :P </p>
+                    <p>Se quiser massagear o ego do dev e contribuir com a relevância do projeto, <a href="https://github.com/rafaellindemann/rafaellindemann.github.io" target="_blank"  class="linkModal">clica aqui</a> pra acessar o repositório e aperta o botão de estrelinha no canto superior direito!</p>
+                </li>
+            </ul>
+        </div>
+    </dialog>
+    <dialog id="modSobre">
+        <div id="divModSobre" class="modalContainer">
+            <button class="botao" onclick="modSobre.close()" id="btFecharModal" aria-label="Fechar modal Sobre o Projeto"><span class="material-icons">highlight_off</span></button>
+            <h2>progHub, antes humildemente chamado de vacina anti medianidade</h2>
+            <p style="margin-top: 20px;">Este projeto era um documento compartilhando links de recursos confiáveis para auxiliar o aprendizado dos meus alunos, principalmente para os que estão se aventurando pela primeira vez no maravilhoso mundo do desenvolvimento mas não somente estes. Agora, ele está aos poucos virando uma página web pra ficar mais organizado e acessível.</p>
+
+        </div>
+    </dialog>
+
+    <script src="registros.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
