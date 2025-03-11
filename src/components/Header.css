@@ -1,0 +1,12 @@
+/* 
+
+.navbar-container {
+    background-color: var(--color-brown);
+    overflow: hidden;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+} */

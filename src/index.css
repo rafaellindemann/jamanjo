@@ -1,0 +1,71 @@
+:root {
+  font-family: 'Courier New', Courier, monospace;
+
+  /* --color-orange: #DF4E39;
+  --color-black: #000;
+  --color-white: #fff;
+  --color-gray: #101010; */
+
+  --color-gold: #D4A017;
+  --color-brown: #d2a87d;
+  --color-black: #101010;
+  --color-green: #a7c957;
+
+
+  /* --cor-preto: #a98467;
+    --cor-preto: #d2a87d;
+    --cor-branco: #010103;
+    --cor-cinza-fundo: #a7c957;
+    --cor-laranja-logo: #A52A2A;
+    --cor-dourado: #D4A017; */
+
+
+  /* Skynet */
+  /* --color-verdeEscuro: #2F4F2F;
+  --color-verdeClaro: #6B8E23;
+  --color-marrom: #8B4513;
+  --color-dourado: #D4A017;
+  --color-vermelho: #A52A2A;
+  --color-cinza: #3b3b3b */
+
+/* Baleia baleia baleia */
+  --jumanji-green: #1E6B52; /* Verde intenso da selva */
+  --jumanji-orange: #FF6B35; /* Laranja vibrante */
+  --jumanji-red: #D72638; /* Vermelho quente */
+  --jumanji-yellow: #FFD166; /* Amarelo vibrante */
+  --jumanji-blue: #26547C; /* Azul profundo */
+  --jumanji-brown: #6B4D2E; /* Marrom terroso */
+
+
+  /* do cartaz no pinterest */
+    /* --cor-dourado: #EDAC38;
+    --cor-vermelho-terra: #B53F25;
+    --cor-verde-musgo: #595629;
+    --cor-verde-escuro: #2E2F1D;
+    --cor-preto-profundo: #010103; */
+  
+  
+    /* Claude: Exemplo de códigos de cores inspirados no pôster */
+  /* --verde-escuro: #114B2B;
+  --verde-folhagem: #1D8045;
+  --marrom-terra: #8B4513;
+  --dourado-vintage: #DAA520;
+  --vermelho-destaque: #8B0000; */
+
+
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root, body, html{
+  min-height: 100vh;
+  /* background-color: #bbb; */
+
+
+}
+
