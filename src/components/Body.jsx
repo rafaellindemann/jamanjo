@@ -6,7 +6,7 @@ import Card from './Card';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Componente Card envolvido com motion
-const MotionCard = motion(({ resource, ...rest }) => (
+const MotionCard = motion.create(({ resource, ...rest }) => (
   <div {...rest}>
     <Card r={resource} />
   </div>
