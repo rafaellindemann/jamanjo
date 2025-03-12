@@ -1,7 +1,15 @@
 
-# progHub, antes chamado de vacina anti medianidade.
+# JAMANJO
+## antes progHub, e mais antigamente vacina anti medianidade.
 Este projeto era um documento compartilhando links para auxiliar o aprendizado dos meus alunos, principalmente para os que estão se aventurando pela primeira vez no maravilhoso mundo do desenvolvimento mas não somente estes.
 Agora, ele está aos poucos virando uma página web, pra ficar mais organizado e acessível.
+
+<!-- ![Logo placa](public/img/jamanjo.svg) -->
+<!-- [![Descrição da imagem](public/img/jamanjo.svg)](https://www.jamanjo.com.br) -->
+<a href="https://www.seusite.com">
+  <img src="public/img/jamanjo.svg" alt="Descrição da imagem" width="200" height="auto" style="border: 1px solid #000;" />
+</a>
+
 
 
 
