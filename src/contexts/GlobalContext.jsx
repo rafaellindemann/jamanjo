@@ -156,7 +156,7 @@ export const GlobalContextProvider = ({ children }) => {
   const categories = [
     "Curso", "Canal Youtube", "Sites", "Carreira", "Jogos", 
     "Repositórios", "Imagens", "Ferramentas", "Livros", "Exercícios", "Fóruns", 
-    "Podcasts", "Redes", "Balaio", "React", "Eventos"
+    "Podcasts", "Redes", "Balaio", "React", "Eventos", "Autorais"
   ];
 
   const [filteredResources, setFilteredResources] = useState(resources);
