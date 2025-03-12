@@ -29,6 +29,14 @@ function Body() {
 
   // Gerenciar redimensionamento
   useEffect(() => {
+    // console.log("===================================");
+    console.log("***********************************");
+    console.log("Que bom te ver por aqui!!!");
+    console.log("Agora aproveita e visita o repositório: https://github.com/rafaellindemann/jamanjo")
+    console.log("Deixa uma estrelinha bonitinha lá pro tio :D");
+    console.log("***********************************");
+    // console.log("===================================");
+
     const handleResize = () => {
       setColumns(getColumnCount());
     };
