@@ -6,7 +6,7 @@ Agora, ele está aos poucos virando uma página web, pra ficar mais organizado e
 
 <!-- ![Logo placa](public/img/jamanjo.svg) -->
 <!-- [![Descrição da imagem](public/img/jamanjo.svg)](https://www.jamanjo.com.br) -->
-<a href="https://www.seusite.com">
+<a href="https://www.jamanjo.com.br">
   <img src="public/img/jamanjo.svg" alt="Descrição da imagem" width="200" height="auto" style="border: 1px solid #000;" />
 </a>
 
@@ -17,10 +17,10 @@ Agora, ele está aos poucos virando uma página web, pra ficar mais organizado e
 Existem três formas de colaborar com o projeto:
 ### Com conteúdo
 Se você conhece algum recurso legal para aprendizes ou desenvolvedores e gostaria de compartilhar, abra um pull request para adicionar um novo registro. Os registros são simples objetos armazenados em um vetor no arquivo registros.js.
-A estrutura dos objetos é 
+A estrutura dos objetos é: 
+- { id: 1, nome: '', tipo: 'normal', categoria: '', descricao: '', link: '', tags: [] },
 
-// {nome: '', categoria: '', descricao: '', link: '', tags: []}, 
-As categorias ajudam o usuário a filtrar o conteúdo. 
+As categorias ajudam o usuário a filtrar o conteúdo por tipo de mídia, as tags servem pra filtrar por coisas mais pontuais como assuntos, tecnologias... 
 
 Categorias disponíveis até agora => Curso Youtube, Curso, Sites, Carreira, Canal YouTube, Jogos, Repositórios, Imagens, Ferramentas, Livros, Exercícios, Fóruns, Podcasts, Balaio, Redes.
 
