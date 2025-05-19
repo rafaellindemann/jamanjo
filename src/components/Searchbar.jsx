@@ -31,7 +31,8 @@ function Searchbar() {
       maxWidth: '600px',
     }}
   >
-    {/* Vine esquerdo atrás */}
+    
+    {!isMobile && <>{/* Vine esquerdo atrás */}
     <img
       src="VineLeft2.svg"
       alt=""
@@ -45,7 +46,6 @@ function Searchbar() {
         pointerEvents: 'none',
       }}
     />
-
     {/* Vine direito atrás */}
     <img
       src="VineRight2.svg"
@@ -61,6 +61,10 @@ function Searchbar() {
       }}
     />
 
+</>}
+    
+    
+    
     {/* Barra de pesquisa acima dos SVGs */}
     <Paper
       sx={{
