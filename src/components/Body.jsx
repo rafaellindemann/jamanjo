@@ -4,6 +4,9 @@ import { Masonry } from '@mui/lab';
 import { GlobalContext } from '../contexts/GlobalContext';
 import Card from './Card';
 import { motion, AnimatePresence } from 'framer-motion';
+import Searchbar from './Searchbar';
+import NotFound from './NotFound';
+
 
 // Componente Card envolvido com motion
 const MotionCard = motion.create(({ resource, ...rest }) => (
@@ -13,10 +16,12 @@ const MotionCard = motion.create(({ resource, ...rest }) => (
 ));
 
 function Body() {
-  const { categories, resources, handleFilter, filteredResources, setFilteredResources } = useContext(GlobalContext);
+  const { categories, resources, handleFilter, filteredResources, setFilteredBySearch } = useContext(GlobalContext);
   const [visibleItems, setVisibleItems] = useState([]);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  
+  const [searchNotFound, setNotFound] = useState(false);
+
+
   // Calculando colunas responsivas
   const getColumnCount = () => {
     if (window.innerWidth < 600) return 1; // xs
@@ -58,8 +63,9 @@ function Body() {
       // Pequena pausa antes de mostrar os novos itens
       const timer = setTimeout(() => {
         setVisibleItems(filteredResources);
+        setNotFound(filteredResources.length === 0);
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
   }, [filteredResources, isInitialLoad]);
@@ -70,8 +76,8 @@ function Body() {
       opacity: 1,
       scale: 1,
       transition: {
-        delay: i * 0.01,  // 0.05 <--- este delay aqui é acumulativo por índice
-        duration: 0.05,   // 0.3  <--- e aqui é quanto tempo a transição leva
+        delay: i * 0.05, // Reduzido para acelerar a animação
+        duration: 0.3,
         ease: "easeOut"
       }
     }),
@@ -79,47 +85,65 @@ function Body() {
   };
 
   return (
-    <Box 
-      sx={{ 
-        bgcolor: 'snow', 
+    <Box
+      sx={{
+        bgcolor: 'snow',
         color: 'text.primary',
         minHeight: '100vh',
         py: 3,
         // borderLeft: '30px solid #6B8E23',
         // borderRight: '30px solid #4caf50',
         // borderBottom: '30px solid #4caf50',
-
+        px: { xs: 2, sm: 4 },
         // boxShadow: 'inset 0px 0px 10px 10px #8B4513',
-        // boxShadow: 'inset 0px 0px 20px 10px #4caf50',
-        boxShadow: 'inset 0px 0px 20px 10px #6B8E23',
+        // boxShadow: 'inset 0px 0px 10px 10px #6B8E23',
         // borderRadius: 20,
+        boxShadow: 'inset 0px 0px 20px 10px #6B8E23'
       }}
     >
+
+      <Searchbar />
+
       <Container maxWidth="xl">
         <AnimatePresence>
-          <Masonry 
-            columns={columns} 
-            spacing={2}
-            sx={{ margin: 0 }}
-          >
-            {visibleItems.map((resource, index) => (
-              <MotionCard
-                key={resource.id}
-                resource={resource}
-                custom={Math.min(index, 10)} // Limita o atraso máximo
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                variants={cardVariants}
-                layout
-                whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-              />
-            ))}
-          </Masonry>
-        </AnimatePresence>
+
+  {/*Renderização condicional, searchNotFound muda de estado com setNotFound(filteredResources.length === 0); 
+  no UseEffect monitorado por filteredResources e IsInitiaLoad*/}
+  {searchNotFound ? (
+    //Caso searchbar não encontre nenhuma informação, exibe componente de não encontrado (NotFound)
+    //Não é adicionada dentro de mansory pois suas propriedades afetam negativamente o componente NotFound
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="60vh"
+    >
+      <NotFound />
+    </Box>
+  ) : (
+    //Mansory só é renderizada caso visibleItems.length seja maior que 0
+    <Masonry columns={columns} spacing={2}>
+      {visibleItems.map((resource, index) => (
+        <MotionCard
+          key={resource.id}
+          resource={resource}
+          custom={Math.min(index, 10)}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          variants={cardVariants}
+          layout
+          whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+        />
+      ))}
+    </Masonry>
+  )}
+</AnimatePresence>
+
       </Container>
     </Box>
   );
 }
 
 export default Body;
+

@@ -2,6 +2,7 @@
 
 import './App.css'
 import Header from './components/Header'
+import Searchbar from './components/Searchbar';
 import Body from './components/Body'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
