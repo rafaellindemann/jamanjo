@@ -76,7 +76,7 @@ export const GlobalContextProvider = ({ children }) => {
     { id: 61, nome: 'HTMLrev', imagem: '', tipo: 'normal', categoria: 'Repositórios', descricao: 'Galeria de templates de sites.', link: 'https://htmlrev.com/', tags: ['Templates', 'HTML', 'CSS', 'Bootstrap'] },
     { id: 62, nome: 'Flexplorer', imagem: '', tipo: 'normal', categoria: 'Ferramentas', descricao: 'Um simulador de flexbox muito louco! (Na home tem mais coisa legal: https://bennettfeely.com/)', link: 'https://bennettfeely.com/flexplorer/', tags: ['Simulador', 'Flexbox', 'CSS'] },
     { id: 63, nome: 'Links sobre CSS', imagem: '', tipo: 'normal', categoria: 'Site', descricao: 'Um repositório (velho) cheio de links para recursos úteis relacionados ao CSS.', link: 'https://github.com/marcelabomfim/CSSEHFODA', tags: ['CSS'] },
-    { id: 64, nome: '🌳🌳 FLEXBOX FROGGY', imagem: '', tipo: 'normal', categoria: 'Jogos', descricao: 'Melhor maneira pra entender flexbox', link: 'https://flexboxfroggy.com/', tags: ['Jogos', 'CSS', 'flexbox'] },
+    { id: 64, nome: '🌳🌳 FLEXBOX FROGGY', imagem: '', tipo: 'normal', categoria: 'Jogos', descricao: 'Melhor maneira pra entender flexbox. Se tiver dificuldade pra entender como o jogo funciona, o Guanabara tem uma aula explicando como ele funciona. Procura no youtube por "O jogo que vai te ensinar Flexbox CSS - @CursoemVideo HTML5 + CSS" e seja feliz!', link: 'https://flexboxfroggy.com/', tags: ['Jogos', 'CSS', 'flexbox'] },
     { id: 65, nome: 'Flexbox Defense', imagem: '', tipo: 'normal', categoria: 'Jogos', descricao: 'Jogo estilo tower defense pra treinar flexbox. Muito bom!', link: 'http://www.flexboxdefense.com/', tags: ['Jogos', 'CSS', 'flexbox'] },
     { id: 66, nome: 'CSS Diner', imagem: '', tipo: 'normal', categoria: 'Jogos', descricao: 'Game pra treinar CSS e seletores.', link: 'https://flukeout.github.io/', tags: ['Jogos', 'CSS'] },
     { id: 67, nome: 'Grid Garden', imagem: '', tipo: 'normal', categoria: 'Jogos', descricao: 'O irmão grid do Flexbox Frog ', link: 'https://cssgridgarden.com/', tags: ['Jogos', 'CSS', 'Grid'] },
@@ -225,7 +225,6 @@ export const GlobalContextProvider = ({ children }) => {
   const [filters, setFilters] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
   const [searchValue, setSearchValue] = useState('');
-
 
 
   // useEffect(() => {
