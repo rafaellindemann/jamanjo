@@ -62,3 +62,7 @@ Quer meter um pull request de respeito? Eis o que ainda tem pendente do escopo o
 
 ## Confira ele no ar!
 [https://www.jamanjo.com.br/](https://www.jamanjo.com.br/)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=rafaellindemann/jamanjo&type=date&legend=top-left)](https://www.star-history.com/#rafaellindemann/jamanjo&type=date&legend=top-left)
