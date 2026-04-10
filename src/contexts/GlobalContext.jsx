@@ -1,4 +1,4 @@
-
+import { logCategoryView, logTagView } from "../services/stats";
 
 import { createContext, useEffect, useState } from "react";
 
@@ -284,6 +284,7 @@ export const GlobalContextProvider = ({ children }) => {
       setFilteredResources(filtered);
       setFilters([category]);
       setSelectedTag(null); // Limpa a tag ao aplicar filtro de catgegoria
+      logCategoryView(category);
     } else {
       clearFilters(); // Limpa todos os filtros
     }
@@ -307,6 +308,7 @@ export const GlobalContextProvider = ({ children }) => {
       setFilteredResources(filtered);
       setFilters([]); // Limpa o filtro de categoria ao aplicar filtro de tag
       setSelectedTag(tag);
+      logTagView(tag);
     } else {
       clearFilters(); // Limpa todos os filtros
     }
