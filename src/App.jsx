@@ -29,13 +29,18 @@ const theme = createTheme({
 
 function App() {
 
+  const path = window.location.pathname;
+
+  if (path === '/painel-stats') {
+    return <Dashboard />;
+  }
 
   return (
-    <ThemeProvider theme={theme}>
-        <Header />
-        <Body />
-    </ThemeProvider>
-  )
+    <>
+      <Header />
+      <Body />
+    </>
+  );
 }
 
 export default App
