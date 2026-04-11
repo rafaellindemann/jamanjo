@@ -19,7 +19,8 @@
     "framer-motion": "^12.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-transition-group": "^4.4.5"
+    "react-transition-group": "^4.4.5",
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
