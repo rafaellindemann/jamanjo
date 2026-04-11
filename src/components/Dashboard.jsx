@@ -5,11 +5,13 @@ import {
   Button,
   Card,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   Container,
   Divider,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -64,6 +66,13 @@ function Dashboard() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [visibleSeries, setVisibleSeries] = useState({
+    page: true,
+    category: true,
+    tag: true,
+    resource_link: true,
+  });
 
   const resourceNameMap = useMemo(() => {
     const map = new Map();
@@ -146,14 +155,27 @@ function Dashboard() {
       return Array.from(map.values()).sort((a, b) => b.pageviews - a.pageviews);
     };
 
-    const recentDays = Array.from(
-      rows.reduce((acc, row) => {
-        const current = acc.get(row.data) || { data: row.data, total: 0 };
-        current.total += row.pageviews;
-        acc.set(row.data, current);
-        return acc;
-      }, new Map()).values()
-    ).sort((a, b) => a.data.localeCompare(b.data));
+    const daysMap = new Map();
+
+    rows.forEach((row) => {
+      const current = daysMap.get(row.data) || {
+        data: row.data,
+        page: 0,
+        category: 0,
+        tag: 0,
+        resource_link: 0,
+        total: 0,
+      };
+
+      current[row.tipo] = (current[row.tipo] || 0) + row.pageviews;
+      current.total += row.pageviews;
+
+      daysMap.set(row.data, current);
+    });
+
+    const lineChartData = Array.from(daysMap.values()).sort((a, b) =>
+      a.data.localeCompare(b.data)
+    );
 
     const formatCategory = (path) =>
       path.replace('/categoria/', '').replaceAll('-', ' ');
@@ -181,11 +203,6 @@ function Dashboard() {
       label: formatResource(item.pagina),
     }));
 
-    const topPages = groupedByPath('page').slice(0, 10).map((item) => ({
-      ...item,
-      label: item.pagina,
-    }));
-
     const typeChartData = Object.keys(TYPE_LABELS).map((type) => ({
       name: TYPE_LABELS[type],
       value: sumViews(byType[type] ?? []),
@@ -204,8 +221,7 @@ function Dashboard() {
       topCategories,
       topTags,
       topResources,
-      topPages,
-      recentDays,
+      lineChartData,
       typeChartData,
       byTypeCards: Object.keys(TYPE_LABELS).map((type) => ({
         type,
@@ -215,6 +231,13 @@ function Dashboard() {
       })),
     };
   }, [rows, resourceNameMap]);
+
+  const toggleSeries = (series) => {
+    setVisibleSeries((prev) => ({
+      ...prev,
+      [series]: !prev[series],
+    }));
+  };
 
   return (
     <Box
@@ -356,29 +379,101 @@ function Dashboard() {
                   gap: 2,
                 }}
               >
-                <ChartCard title="Views por dia">
-                  <Box sx={{ width: '100%', height: 320 }}>
+                <ChartCard title="Acessos x dias por tipo">
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    spacing={1}
+                    sx={{ mb: 2, flexWrap: 'wrap' }}
+                  >
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.page}
+                          onChange={() => toggleSeries('page')}
+                        />
+                      }
+                      label="Home"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.category}
+                          onChange={() => toggleSeries('category')}
+                        />
+                      }
+                      label="Categorias"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.tag}
+                          onChange={() => toggleSeries('tag')}
+                        />
+                      }
+                      label="Bolachas"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.resource_link}
+                          onChange={() => toggleSeries('resource_link')}
+                        />
+                      }
+                      label="Recursos"
+                    />
+                  </Stack>
+
+                  <Box sx={{ width: '100%', height: 340 }}>
                     <ResponsiveContainer>
-                      <LineChart data={metrics.recentDays}>
+                      <LineChart data={metrics.lineChartData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="data" />
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Line
-                          type="monotone"
-                          dataKey="total"
-                          name="Views"
-                          stroke="#6B8E23"
-                          strokeWidth={3}
-                        />
+                        {visibleSeries.page && (
+                          <Line
+                            type="monotone"
+                            dataKey="page"
+                            name="Home"
+                            stroke={TYPE_COLORS.page}
+                            strokeWidth={3}
+                          />
+                        )}
+                        {visibleSeries.category && (
+                          <Line
+                            type="monotone"
+                            dataKey="category"
+                            name="Categorias"
+                            stroke={TYPE_COLORS.category}
+                            strokeWidth={3}
+                          />
+                        )}
+                        {visibleSeries.tag && (
+                          <Line
+                            type="monotone"
+                            dataKey="tag"
+                            name="Bolachas"
+                            stroke={TYPE_COLORS.tag}
+                            strokeWidth={3}
+                          />
+                        )}
+                        {visibleSeries.resource_link && (
+                          <Line
+                            type="monotone"
+                            dataKey="resource_link"
+                            name="Recursos"
+                            stroke={TYPE_COLORS.resource_link}
+                            strokeWidth={3}
+                          />
+                        )}
                       </LineChart>
                     </ResponsiveContainer>
                   </Box>
                 </ChartCard>
 
                 <ChartCard title="Participação por tipo">
-                  <Box sx={{ width: '100%', height: 320 }}>
+                  <Box sx={{ width: '100%', height: 340 }}>
                     <ResponsiveContainer>
                       <PieChart>
                         <Pie
