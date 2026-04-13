@@ -5,24 +5,36 @@ import {
   Button,
   Card,
   CardContent,
+  Checkbox,
   Chip,
   CircularProgress,
   Container,
   Divider,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Typography,
 } from '@mui/material';
 import { supabase } from '../services/supabase';
 import { GlobalContext } from '../contexts/GlobalContext';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 const SITE = 'jamanjo';
 
@@ -55,13 +67,18 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [visibleSeries, setVisibleSeries] = useState({
+    page: true,
+    category: true,
+    tag: true,
+    resource_link: true,
+  });
+
   const resourceNameMap = useMemo(() => {
     const map = new Map();
-
     resources.forEach((resource) => {
       map.set(String(resource.id), resource.nome);
     });
-
     return map;
   }, [resources]);
 
@@ -138,18 +155,27 @@ function Dashboard() {
       return Array.from(map.values()).sort((a, b) => b.pageviews - a.pageviews);
     };
 
-    const recentDays = Array.from(
-      rows.reduce((acc, row) => {
-        const current = acc.get(row.data) || { data: row.data, total: 0 };
-        current.total += row.pageviews;
-        acc.set(row.data, current);
-        return acc;
-      }, new Map()).values()
-    )
-      .sort((a, b) => a.data.localeCompare(b.data))
-      .slice(-14);
+    const daysMap = new Map();
 
-    const maxRecent = Math.max(...recentDays.map((item) => item.total), 1);
+    rows.forEach((row) => {
+      const current = daysMap.get(row.data) || {
+        data: row.data,
+        page: 0,
+        category: 0,
+        tag: 0,
+        resource_link: 0,
+        total: 0,
+      };
+
+      current[row.tipo] = (current[row.tipo] || 0) + row.pageviews;
+      current.total += row.pageviews;
+
+      daysMap.set(row.data, current);
+    });
+
+    const lineChartData = Array.from(daysMap.values()).sort((a, b) =>
+      a.data.localeCompare(b.data)
+    );
 
     const formatCategory = (path) =>
       path.replace('/categoria/', '').replaceAll('-', ' ');
@@ -162,6 +188,28 @@ function Dashboard() {
       return resourceNameMap.get(id) || `Recurso #${id}`;
     };
 
+    const topCategories = groupedByPath('category').slice(0, 8).map((item) => ({
+      ...item,
+      label: formatCategory(item.pagina),
+    }));
+
+    const topTags = groupedByPath('tag').slice(0, 10).map((item) => ({
+      ...item,
+      label: formatTag(item.pagina),
+    }));
+
+    const topResources = groupedByPath('resource_link').slice(0, 10).map((item) => ({
+      ...item,
+      label: formatResource(item.pagina),
+    }));
+
+    const typeChartData = Object.keys(TYPE_LABELS).map((type) => ({
+      name: TYPE_LABELS[type],
+      value: sumViews(byType[type] ?? []),
+      color: TYPE_COLORS[type],
+      type,
+    }));
+
     return {
       totalViews,
       totalDays,
@@ -170,30 +218,11 @@ function Dashboard() {
       categoryViews: sumViews(byType.category ?? []),
       tagViews: sumViews(byType.tag ?? []),
       resourceViews: sumViews(byType.resource_link ?? []),
-
-      topCategories: groupedByPath('category').slice(0, 8).map((item) => ({
-        ...item,
-        label: formatCategory(item.pagina),
-      })),
-
-      topTags: groupedByPath('tag').slice(0, 10).map((item) => ({
-        ...item,
-        label: formatTag(item.pagina),
-      })),
-
-      topResources: groupedByPath('resource_link').slice(0, 10).map((item) => ({
-        ...item,
-        label: formatResource(item.pagina),
-      })),
-
-      topPages: groupedByPath('page').slice(0, 10).map((item) => ({
-        ...item,
-        label: item.pagina,
-      })),
-
-      recentDays,
-      maxRecent,
-
+      topCategories,
+      topTags,
+      topResources,
+      lineChartData,
+      typeChartData,
       byTypeCards: Object.keys(TYPE_LABELS).map((type) => ({
         type,
         label: TYPE_LABELS[type],
@@ -202,6 +231,13 @@ function Dashboard() {
       })),
     };
   }, [rows, resourceNameMap]);
+
+  const toggleSeries = (series) => {
+    setVisibleSeries((prev) => ({
+      ...prev,
+      [series]: !prev[series],
+    }));
+  };
 
   return (
     <Box
@@ -250,11 +286,7 @@ function Dashboard() {
                     </Select>
                   </FormControl>
 
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    href="/"
-                  >
+                  <Button variant="contained" color="secondary" href="/">
                     Voltar para o site
                   </Button>
                 </Stack>
@@ -286,26 +318,10 @@ function Dashboard() {
                   gap: 2,
                 }}
               >
-                <StatCard
-                  title="Visualizações totais"
-                  value={metrics.totalViews}
-                  subtitle="Soma de todos os logs no período"
-                />
-                <StatCard
-                  title="Dias com atividade"
-                  value={metrics.totalDays}
-                  subtitle="Dias distintos com algum acesso"
-                />
-                <StatCard
-                  title="Linhas agregadas"
-                  value={metrics.totalItems}
-                  subtitle="Registros únicos por dia/tipo/página"
-                />
-                <StatCard
-                  title="Cliques em recursos"
-                  value={metrics.resourceViews}
-                  subtitle="Quantidade total de acessos aos materiais"
-                />
+                <StatCard title="Visualizações totais" value={metrics.totalViews} subtitle="Soma de todos os logs no período" />
+                <StatCard title="Dias com atividade" value={metrics.totalDays} subtitle="Dias distintos com algum acesso" />
+                <StatCard title="Linhas agregadas" value={metrics.totalItems} subtitle="Registros únicos por dia/tipo/página" />
+                <StatCard title="Cliques em recursos" value={metrics.resourceViews} subtitle="Quantidade total de acessos aos materiais" />
               </Box>
 
               <Card sx={{ borderRadius: 4 }}>
@@ -332,12 +348,7 @@ function Dashboard() {
                         }}
                       >
                         <CardContent>
-                          <Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            sx={{ mb: 1 }}
-                          >
+                          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
                             <Typography fontWeight={700}>{item.label}</Typography>
                             <Chip
                               size="small"
@@ -364,60 +375,193 @@ function Dashboard() {
               <Box
                 sx={{
                   display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', xl: '1.1fr 0.9fr' },
+                  gridTemplateColumns: { xs: '1fr', xl: '1.2fr 0.8fr' },
                   gap: 2,
                 }}
               >
-                <Card sx={{ borderRadius: 4 }}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
-                      Movimento recente
-                    </Typography>
+                <ChartCard title="Acessos x dias por tipo">
+                  <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    spacing={1}
+                    sx={{ mb: 2, flexWrap: 'wrap' }}
+                  >
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.page}
+                          onChange={() => toggleSeries('page')}
+                        />
+                      }
+                      label="Home"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.category}
+                          onChange={() => toggleSeries('category')}
+                        />
+                      }
+                      label="Categorias"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.tag}
+                          onChange={() => toggleSeries('tag')}
+                        />
+                      }
+                      label="Bolachas"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={visibleSeries.resource_link}
+                          onChange={() => toggleSeries('resource_link')}
+                        />
+                      }
+                      label="Recursos"
+                    />
+                  </Stack>
 
-                    <Stack spacing={1.5}>
-                      {metrics.recentDays.length === 0 ? (
-                        <Typography color="text.secondary">
-                          Ainda não há dados para o período selecionado.
-                        </Typography>
-                      ) : (
-                        metrics.recentDays.map((item) => (
-                          <Box key={item.data}>
-                            <Stack
-                              direction="row"
-                              justifyContent="space-between"
-                              sx={{ mb: 0.5 }}
-                            >
-                              <Typography variant="body2">{item.data}</Typography>
-                              <Typography variant="body2" fontWeight={700}>
-                                {item.total}
-                              </Typography>
-                            </Stack>
-                            <Box
-                              sx={{
-                                width: '100%',
-                                height: 10,
-                                borderRadius: 999,
-                                backgroundColor: '#dfe7d1',
-                                overflow: 'hidden',
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  width: `${(item.total / metrics.maxRecent) * 100}%`,
-                                  height: '100%',
-                                  borderRadius: 999,
-                                  background:
-                                    'linear-gradient(90deg, #6B8E23 0%, #8B4513 100%)',
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        ))
-                      )}
-                    </Stack>
-                  </CardContent>
-                </Card>
+                  <Box sx={{ width: '100%', height: 340 }}>
+                    <ResponsiveContainer>
+                      <LineChart data={metrics.lineChartData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="data" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        {visibleSeries.page && (
+                          <Line
+                            type="monotone"
+                            dataKey="page"
+                            name="Home"
+                            stroke={TYPE_COLORS.page}
+                            strokeWidth={3}
+                          />
+                        )}
+                        {visibleSeries.category && (
+                          <Line
+                            type="monotone"
+                            dataKey="category"
+                            name="Categorias"
+                            stroke={TYPE_COLORS.category}
+                            strokeWidth={3}
+                          />
+                        )}
+                        {visibleSeries.tag && (
+                          <Line
+                            type="monotone"
+                            dataKey="tag"
+                            name="Bolachas"
+                            stroke={TYPE_COLORS.tag}
+                            strokeWidth={3}
+                          />
+                        )}
+                        {visibleSeries.resource_link && (
+                          <Line
+                            type="monotone"
+                            dataKey="resource_link"
+                            name="Recursos"
+                            stroke={TYPE_COLORS.resource_link}
+                            strokeWidth={3}
+                          />
+                        )}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </ChartCard>
 
+                <ChartCard title="Participação por tipo">
+                  <Box sx={{ width: '100%', height: 340 }}>
+                    <ResponsiveContainer>
+                      <PieChart>
+                        <Pie
+                          data={metrics.typeChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={65}
+                          outerRadius={100}
+                          paddingAngle={3}
+                        >
+                          {metrics.typeChartData.map((entry) => (
+                            <Cell key={entry.type} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </ChartCard>
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', xl: '1fr 1fr' },
+                  gap: 2,
+                }}
+              >
+                <ChartCard title="Top categorias">
+                  <Box sx={{ width: '100%', height: 360 }}>
+                    <ResponsiveContainer>
+                      <BarChart
+                        data={metrics.topCategories}
+                        layout="vertical"
+                        margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis
+                          type="category"
+                          dataKey="label"
+                          width={120}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <Tooltip />
+                        <Bar dataKey="pageviews" name="Views" fill="#8B4513" radius={[0, 6, 6, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </ChartCard>
+
+                <ChartCard title="Recursos mais clicados">
+                  <Box sx={{ width: '100%', height: 360 }}>
+                    <ResponsiveContainer>
+                      <BarChart
+                        data={metrics.topResources}
+                        layout="vertical"
+                        margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis
+                          type="category"
+                          dataKey="label"
+                          width={180}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <Tooltip />
+                        <Bar dataKey="pageviews" name="Cliques" fill="#1565c0" radius={[0, 6, 6, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </ChartCard>
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
+                  gap: 2,
+                }}
+              >
+                <RankingCard
+                  title="Top bolachas"
+                  items={metrics.topTags}
+                  emptyLabel="Nenhuma bolacha clicada ainda."
+                />
                 <Card sx={{ borderRadius: 4 }}>
                   <CardContent>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
@@ -425,26 +569,10 @@ function Dashboard() {
                     </Typography>
 
                     <Stack spacing={1.2}>
-                      <SummaryRow
-                        label="Home"
-                        value={metrics.homeViews}
-                        color={TYPE_COLORS.page}
-                      />
-                      <SummaryRow
-                        label="Categorias"
-                        value={metrics.categoryViews}
-                        color={TYPE_COLORS.category}
-                      />
-                      <SummaryRow
-                        label="Bolachas"
-                        value={metrics.tagViews}
-                        color={TYPE_COLORS.tag}
-                      />
-                      <SummaryRow
-                        label="Recursos"
-                        value={metrics.resourceViews}
-                        color={TYPE_COLORS.resource_link}
-                      />
+                      <SummaryRow label="Home" value={metrics.homeViews} color={TYPE_COLORS.page} />
+                      <SummaryRow label="Categorias" value={metrics.categoryViews} color={TYPE_COLORS.category} />
+                      <SummaryRow label="Bolachas" value={metrics.tagViews} color={TYPE_COLORS.tag} />
+                      <SummaryRow label="Recursos" value={metrics.resourceViews} color={TYPE_COLORS.resource_link} />
                     </Stack>
 
                     <Divider sx={{ my: 2 }} />
@@ -455,46 +583,6 @@ function Dashboard() {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Box>
-
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
-                  gap: 2,
-                }}
-              >
-                <RankingCard
-                  title="Top categorias"
-                  items={metrics.topCategories}
-                  emptyLabel="Nenhuma categoria clicada ainda."
-                />
-                <RankingCard
-                  title="Top bolachas"
-                  items={metrics.topTags}
-                  emptyLabel="Nenhuma bolacha clicada ainda."
-                />
-              </Box>
-
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
-                  gap: 2,
-                }}
-              >
-                <TableCard
-                  title="Recursos mais clicados"
-                  rows={metrics.topResources}
-                  labelHeader="Recurso"
-                  emptyLabel="Nenhum clique em recurso ainda."
-                />
-                <TableCard
-                  title="Páginas mais vistas"
-                  rows={metrics.topPages}
-                  labelHeader="Página"
-                  emptyLabel="Nenhuma página registrada ainda."
-                />
               </Box>
             </>
           )}
@@ -579,40 +667,14 @@ function RankingCard({ title, items, emptyLabel }) {
   );
 }
 
-function TableCard({ title, rows, labelHeader, emptyLabel }) {
+function ChartCard({ title, children }) {
   return (
     <Card sx={{ borderRadius: 4 }}>
       <CardContent>
         <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
           {title}
         </Typography>
-
-        {rows.length === 0 ? (
-          <Typography color="text.secondary">{emptyLabel}</Typography>
-        ) : (
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>{labelHeader}</TableCell>
-                <TableCell align="right">Views</TableCell>
-                <TableCell align="right">Dias</TableCell>
-                <TableCell align="right">Última vez</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow key={row.pagina}>
-                  <TableCell sx={{ textTransform: 'capitalize' }}>
-                    {row.label}
-                  </TableCell>
-                  <TableCell align="right">{row.pageviews}</TableCell>
-                  <TableCell align="right">{row.dias}</TableCell>
-                  <TableCell align="right">{row.ultima_data}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+        {children}
       </CardContent>
     </Card>
   );
